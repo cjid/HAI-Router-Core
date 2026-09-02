@@ -1,0 +1,43 @@
+# HAI-Router — Agent Skills
+
+Drop-in skills for any AI agent (Claude, Cursor, ChatGPT, custom SDK). **Copy a link** below and paste it to your AI — it will fetch the skill and use HAI-Router for you.
+
+> Tip: start with the **hairouter** entry skill — it covers setup and links to all capability skills.
+
+## Skills
+
+| Capability | Copy link below and paste to your AI |
+|---|---|
+| **Entry / Setup** (start here) | https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter/SKILL.md |
+| Chat / code-gen | https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter-chat/SKILL.md |
+| Image generation | https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter-image/SKILL.md |
+| Video generation (xAI Grok Imagine) | https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter-video/SKILL.md |
+| Text-to-speech | https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter-tts/SKILL.md |
+| Speech-to-text | https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter-stt/SKILL.md |
+| Embeddings | https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter-embeddings/SKILL.md |
+| Web search | https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter-web-search/SKILL.md |
+| Web fetch (URL → markdown) | https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter-web-fetch/SKILL.md |
+
+## How to use
+
+Paste to your AI (Claude, Cursor, ChatGPT, …):
+
+```
+Read this skill and use it: https://raw.githubusercontent.com/cjid/HAIRouter/refs/heads/master/skills/hairouter/SKILL.md
+```
+
+Then ask normally — *"generate an image of a cat"*, *"transcribe this URL"*, etc.
+
+## Configure your shell once
+
+```bash
+export HAI_ROUTER_URL="http://localhost:20128"   # local default, or your VPS / tunnel URL
+export HAI_ROUTER_KEY="sk_hairouter"               # from Dashboard → Keys (only if requireApiKey=true)
+```
+
+Verify: `curl $HAI_ROUTER_URL/api/health` → `{"ok":true}`.
+
+## Links
+
+- Source: https://github.com/cjid/HAIRouter
+- Dashboard: local install at `$HAI_ROUTER_URL/dashboard` (default http://localhost:20128/dashboard)

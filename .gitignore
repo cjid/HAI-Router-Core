@@ -1,0 +1,122 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+.tmp-build/
+**/node_modules/
+cli/node_modules/
+tests/node_modules/
+
+# Test run artifacts (test source *.test.js remains tracked)
+tests/coverage/
+tests/.vite/
+tests/__baseline__/ab-*.json
+tests/__baseline__/current-run*.json
+tests/__baseline__/full-run.log
+
+# Pack / large local artifacts
+*.tgz
+9router-*.tgz
+
+# Local DB from dev/test runs
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Secrets & credentials (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+**/secrets/
+
+# next.js
+/.next/
+/.next-cli-build/
+/out/
+cli/.build-home/
+product
+# production
+/build
+.idea/
+
+# misc
+.DS_Store
+.tmp-icon-names.txt
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+.bin/*
+go-engine/bin/
+data/
+!src/shared/data/
+!src/shared/data/**
+logs/*
+source/*
+.cursor/*
+docs/*
+!docs/ARCHITECTURE.md
+!docs/GO_ENGINE.md
+!docs/PROVIDER_SAFETY.md
+!docs/USAGE_AND_OBSERVABILITY.md
+!docs/GO_ENGINE_MIGRATION.md
+!docs/images/
+!docs/images/**
+test/*
+open-sse/test/*
+RM.vn.md
+RM.md
+cursor/*
+PUBLIC.md
+Thanks.md
+PUBLIC.en.md
+PR/*
+package-lock.json
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+README1.md
+deploy*.sh
+ecosystem.config.*
+
+scripts/agSniffer/*
+gitbooks/*
+gitbook/README.md
+
+# Refactor backup reference (do not bundle/lint)
+open-sse.old/
+.graphifyignore
+graphify-out/*
+
+# Local-only working dirs (notes, vendored repos, scripts, skills)
+.claude/
+.docs/
+.repo/
+.script/
+.codegraph/
+.PR/
+.next-analyze/*

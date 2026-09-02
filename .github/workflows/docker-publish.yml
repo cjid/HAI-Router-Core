@@ -1,5 +1,8 @@
 name: Build and Push Docker Image
 
+# Operator-controlled release: tag push or manual dispatch only.
+# Dependabot must not trigger registry publishes.
+
 on:
   push:
     tags:
@@ -11,6 +14,7 @@ env:
 
 jobs:
   build-and-push:
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read

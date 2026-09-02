@@ -1,43 +1,40 @@
 version: 2
+
+# HAI-Router dependency policy:
+# - Dependabot may inspect dependency manifests.
+# - Dependabot MUST NOT automatically open version-update PRs.
+# - Dependency upgrades are reviewed and executed manually by the operator.
+# - Dependabot Alerts may remain enabled separately in repository settings.
+# - Dependabot Security Updates / automated security fixes should remain disabled
+#   if automatic Dependabot PR creation is not desired.
+
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 5
-    groups:
-      root-production:
-        patterns:
-          - "*"
-        update-types:
-          - patch
-          - minor
+      interval: monthly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: npm
     directory: /cli
     schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 3
+      interval: monthly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: npm
     directory: /tests
     schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 2
+      interval: monthly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: gomod
     directory: /go-engine
     schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 3
+      interval: monthly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 3
+      interval: monthly
+    open-pull-requests-limit: 0

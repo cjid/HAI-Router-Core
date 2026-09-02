@@ -4,7 +4,7 @@ Canonical structured data lives in `src/shared/data/changelog.js` (dashboard `/d
 
 ## 0.1.0-init — Pre-release
 
-**Version:** `0.1.0-init` · **Architecture:** Node control-plane + Go Engine transport · **Status:** Pre-release
+**Version:** `0.1.0-init` · **Tag:** `v0.1.0-init` @ `b30a9c41` · **Architecture:** Node control-plane + Go Engine transport
 
 ### Highlights
 

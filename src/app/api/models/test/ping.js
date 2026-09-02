@@ -2,8 +2,19 @@ import { originalFetch } from "open-sse/utils/proxyFetch.js";
 import { getApiKeys } from "@/lib/localDb";
 import { UPDATER_CONFIG } from "@/shared/constants/config";
 import { getConsistentMachineId } from "@/shared/utils/machineId";
+import { normalizeModelTestError } from "@/shared/utils/modelTestError";
 
 const CLI_TOKEN_SALT = "9r-cli-auth";
+
+function modelTestFailure(status, detail, extra = {}) {
+  const normalized = normalizeModelTestError({ status, message: detail, ...extra });
+  return {
+    ok: false,
+    status: normalized.httpStatus,
+    error: `HTTP ${normalized.httpStatus}${normalized.providerMessage ? `: ${normalized.providerMessage}` : ""}`,
+    ...normalized,
+  };
+}
 
 /** Internal loopback to HAI /api/v1/* — uses test stubs under Vitest. */
 function loopbackFetch(url, options) {
@@ -81,7 +92,7 @@ export async function pingModelByKind(model, kind, baseUrl = `http://127.0.0.1:$
 
     if (!res.ok) {
       const detail = parsed?.error?.message || parsed?.error || rawText;
-      return { ok: false, latencyMs, error: `HTTP ${res.status}${detail ? `: ${String(detail).slice(0, 240)}` : ""}`, status: res.status };
+      return { ...modelTestFailure(res.status, detail), latencyMs };
     }
     const hasEmbedding = Array.isArray(parsed?.data) && parsed.data.length > 0 && Array.isArray(parsed.data[0]?.embedding);
     if (!hasEmbedding) {
@@ -104,7 +115,7 @@ export async function pingModelByKind(model, kind, baseUrl = `http://127.0.0.1:$
 
     if (!res.ok) {
       const detail = parsed?.error?.message || parsed?.msg || parsed?.message || parsed?.error || rawText;
-      return { ok: false, latencyMs, error: `HTTP ${res.status}${detail ? `: ${String(detail).slice(0, 240)}` : ""}`, status: res.status };
+      return { ...modelTestFailure(res.status, detail), latencyMs };
     }
 
     const hasImages = Array.isArray(parsed?.data) && parsed.data.length > 0;
@@ -133,7 +144,7 @@ export async function pingModelByKind(model, kind, baseUrl = `http://127.0.0.1:$
 
     if (!res.ok) {
       const detail = parsed?.error?.message || parsed?.msg || parsed?.message || parsed?.error || rawText;
-      return { ok: false, latencyMs, error: `HTTP ${res.status}${detail ? `: ${String(detail).slice(0, 240)}` : ""}`, status: res.status };
+      return { ...modelTestFailure(res.status, detail), latencyMs };
     }
 
     const text = typeof parsed?.text === "string" ? parsed.text : "";
@@ -166,7 +177,7 @@ export async function pingModelByKind(model, kind, baseUrl = `http://127.0.0.1:$
 
   if (!res.ok) {
     const detail = parsed?.error?.message || parsed?.msg || parsed?.message || parsed?.error || rawText;
-    return { ok: false, latencyMs, error: `HTTP ${res.status}${detail ? `: ${String(detail).slice(0, 240)}` : ""}`, status: res.status };
+    return { ...modelTestFailure(res.status, detail), latencyMs };
   }
 
   const providerStatus = parsed?.status;

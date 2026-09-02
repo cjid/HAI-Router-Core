@@ -75,6 +75,7 @@ export default function ProviderDetailPage() {
   const [liveModels, setLiveModels] = useState([]);
   const [kiloFreeModels, setKiloFreeModels] = useState([]);
   const [disabledModelIds, setDisabledModelIds] = useState([]);
+  const disabledModelsRequestRef = useRef(0);
   const [confirmState, setConfirmState] = useState(null);
   const [showAgRiskModal, setShowAgRiskModal] = useState(false);
   const [oneByOneRunning, setOneByOneRunning] = useState(false);
@@ -201,10 +202,11 @@ export default function ProviderDetailPage() {
     : providerAlias;
 
   const fetchDisabledModels = useCallback(async () => {
+    const requestId = ++disabledModelsRequestRef.current;
     try {
       const res = await fetch(`/api/models/disabled?providerAlias=${encodeURIComponent(providerStorageAlias)}`, { cache: "no-store" });
       const data = await res.json();
-      if (res.ok) setDisabledModelIds(data.ids || []);
+      if (res.ok && requestId === disabledModelsRequestRef.current) setDisabledModelIds(data.ids || []);
     } catch (error) {
       console.log("Error fetching disabled models:", error);
     }
@@ -1123,6 +1125,12 @@ export default function ProviderDetailPage() {
         message: ok
           ? "The model responded successfully to a test request."
           : (data.error || "Model not reachable"),
+        httpStatus: data.httpStatus || data.status || null,
+        providerMessage: data.providerMessage || null,
+        retryScheduled: data.retryScheduled === true,
+        retryAt: data.retryAt || null,
+        retryAttempt: data.retryAttempt ?? null,
+        retryMaxAttempts: data.retryMaxAttempts ?? null,
       });
     } catch {
       setModelTestResults((prev) => ({ ...prev, [modelId]: "error" }));
@@ -1131,6 +1139,7 @@ export default function ProviderDetailPage() {
         type: "error",
         modelLabel,
         message: "Network error — could not reach the test endpoint.",
+        retryScheduled: false,
       });
     } finally {
       setTestingModelIds((prev) => { const n = new Set(prev); n.delete(modelId); return n; });
@@ -1167,6 +1176,7 @@ export default function ProviderDetailPage() {
       modelAliases,
       providerAlias: providerStorageAlias,
       builtInModels: models,
+      includeBuiltInModels: true,
       type: "llm",
     });
 
@@ -1191,6 +1201,7 @@ export default function ProviderDetailPage() {
         onAddCustom={() => setShowAddCustomModel(true)}
         onEnableModel={handleEnableModel}
         onDisableAll={handleDisableAll}
+        onEnableAll={handleEnableAll}
         resolveThinkingSuffix={resolveThinkingSuffix}
         suggestedModels={suggestedModels}
         onAddSuggested={(modelId) => handleAddCustomModel(modelId, "llm", providerStorageAlias)}

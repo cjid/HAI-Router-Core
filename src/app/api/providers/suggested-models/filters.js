@@ -21,7 +21,7 @@ export const FILTERS = {
   "opencode-free": (models) =>
     models
       .filter((m) => m.id?.endsWith("-free") || KNOWN_FREE_OPENCODE_MODELS.includes(m.id))
-      .map((m) => ({ id: m.id, name: m.id })),
+      .map((m) => ({ id: m.id, name: m.name || m.id })),
 
   // models.dev returns a large catalog; keep only mimo models
   "mimo-free": (models) =>

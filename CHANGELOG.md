@@ -9,6 +9,8 @@ Canonical structured data lives in `src/shared/data/changelog.js` (dashboard `/d
 ### Highlights
 
 - OpenAI-compatible `/v1` gateway with multi-provider routing and format translation
+- Model catalog now separates explicit routing configuration from provider suggestions; OpenCode Free models remain in Suggested until added.
+- Model test failures show sanitized HTTP/provider details and never fabricate retry state.
 - Provider-facing HTTP exclusively via Go Engine (zero Node provider egress)
 - Provider-truthful SSE streaming (presentation smoother removed)
 - Provider Safety concurrency controls

@@ -41,6 +41,7 @@ export default function ModelsTableSection({
   onAddCustom,
   onEnableModel,
   onDisableAll,
+  onEnableAll,
   resolveThinkingSuffix,
   suggestedModels = [],
   onAddSuggested,
@@ -196,6 +197,10 @@ export default function ModelsTableSection({
 
   const enabledIds = useMemo(
     () => configuredRows.filter((r) => !disabledSet.has(r.modelId) && !r.stale).map((r) => r.modelId),
+    [configuredRows, disabledSet],
+  );
+  const disabledConfiguredIds = useMemo(
+    () => configuredRows.filter((r) => disabledSet.has(r.modelId)).map((r) => r.modelId),
     [configuredRows, disabledSet],
   );
 
@@ -408,6 +413,11 @@ export default function ModelsTableSection({
                 Disable All
               </Button>
             ) : null}
+            {disabledConfiguredIds.length > 0 && onEnableAll ? (
+              <Button size="md" variant="secondary" icon="check" onClick={() => onEnableAll(disabledConfiguredIds)}>
+                Enable All
+              </Button>
+            ) : null}
           </div>
         </div>
 
@@ -501,6 +511,7 @@ ModelsTableSection.propTypes = {
   onAddCustom: PropTypes.func.isRequired,
   onEnableModel: PropTypes.func,
   onDisableAll: PropTypes.func,
+  onEnableAll: PropTypes.func,
   resolveThinkingSuffix: PropTypes.func,
   suggestedModels: PropTypes.array,
   onAddSuggested: PropTypes.func,
@@ -511,6 +522,12 @@ ModelsTableSection.propTypes = {
     type: PropTypes.oneOf(["success", "error"]).isRequired,
     modelLabel: PropTypes.string.isRequired,
     message: PropTypes.string,
+    httpStatus: PropTypes.number,
+    providerMessage: PropTypes.string,
+    retryScheduled: PropTypes.bool,
+    retryAt: PropTypes.string,
+    retryAttempt: PropTypes.number,
+    retryMaxAttempts: PropTypes.number,
   }),
   onDismissModelTestAlert: PropTypes.func,
 };

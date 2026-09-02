@@ -307,6 +307,15 @@ export const CHANGELOG_ENTRIES = Object.freeze([
     evidence: "tests/unit/model-test-visual.test.js",
   },
   {
+    id: "catalog-explicit-configuration",
+    title: "Explicit model configuration and Suggested catalog",
+    summary: "Static and OpenCode Free catalog models stay Suggested until added; model-test errors retain sanitized HTTP/provider detail without fabricated retries.",
+    area: "Model Catalog",
+    category: "ui",
+    status: S.COMPLETED,
+    evidence: "tests/unit/build-model-catalog-sections.test.js, tests/unit/model-test-error-presentation.test.js",
+  },
+  {
     id: "combo-strategies",
     title: "Combo Fallback / Round Robin / Fusion",
     summary: "Three combo strategies with vision/audio capacity adapters.",
@@ -553,6 +562,7 @@ export const CURRENT_RELEASE = Object.freeze({
       "identity-cli-data-dir",
       "go-dynamic-workers",
       "catalog-fetch-models",
+      "catalog-explicit-configuration",
       "combo-strategies",
       "identity-docs-rebuild",
     ],

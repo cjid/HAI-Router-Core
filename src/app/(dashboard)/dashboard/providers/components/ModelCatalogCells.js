@@ -149,11 +149,16 @@ export function ModelTestAlert({ alert, onDismiss }) {
           {isError ? "Model test failed" : "Model test succeeded"}
         </p>
         <p className="mt-0.5 font-mono text-[11px] text-text-muted">{alert.modelLabel}</p>
-        {alert.message ? (
+        {alert.message && (!isError || !alert.providerMessage) ? (
           <p className={cn("mt-1 text-xs break-words", isError ? "text-red-600/90 dark:text-red-400/90" : "text-emerald-700 dark:text-emerald-300/90")}>
             {alert.message}
           </p>
         ) : null}
+        {isError && alert.httpStatus ? <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">HTTP {alert.httpStatus}</p> : null}
+        {isError && alert.providerMessage ? <p className="mt-1 text-xs text-text-muted break-words">Provider error: {alert.providerMessage}</p> : null}
+        {isError && alert.retryScheduled ? (
+          <p className="mt-1 text-xs text-text-muted">Retry scheduled for {alert.retryAt} — attempt {alert.retryAttempt}/{alert.retryMaxAttempts}</p>
+        ) : isError ? <p className="mt-1 text-xs text-text-muted">No retry scheduled.</p> : null}
       </div>
       {onDismiss ? (
         <button
@@ -174,6 +179,12 @@ ModelTestAlert.propTypes = {
     type: PropTypes.oneOf(["success", "error"]).isRequired,
     modelLabel: PropTypes.string.isRequired,
     message: PropTypes.string,
+    httpStatus: PropTypes.number,
+    providerMessage: PropTypes.string,
+    retryScheduled: PropTypes.bool,
+    retryAt: PropTypes.string,
+    retryAttempt: PropTypes.number,
+    retryMaxAttempts: PropTypes.number,
   }),
   onDismiss: PropTypes.func,
 };
@@ -236,12 +247,12 @@ export function RowActions({
         </Tooltip>
       ) : null}
       {row.isCustom && onDeleteCustom ? (
-        <Tooltip text="Remove custom model" position="bottom">
+        <Tooltip text="Remove from configuration" position="bottom">
           <button
             type="button"
             onClick={() => onDeleteCustom(row.modelId)}
             className={cn(ACTION_BTN, "hover:bg-red-500/10 hover:text-red-500")}
-            aria-label="Remove custom model"
+            aria-label="Remove from configuration"
           >
             <TableMdi path={mdiClose} />
           </button>

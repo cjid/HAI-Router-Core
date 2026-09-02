@@ -52,8 +52,8 @@ function enrichDiscoveredRow({
 }
 
 /**
- * configuredRows — user's model configuration (registry + custom + disabled).
- * repoRows — available pool from provider fetch + suggestions (single table, state differs).
+ * configuredRows — models explicitly persisted in the user's routing configuration.
+ * repoRows — canonical provider/default/fetched catalog entries not configured by the user.
  */
 export function buildModelCatalogSections({
   providerId,
@@ -67,21 +67,7 @@ export function buildModelCatalogSections({
 }) {
   const configuredById = new Map();
   const disabledSet = new Set(disabledModelIds);
-  const registryIds = new Set(staticModels.map((m) => m.id).filter(Boolean));
-
-  for (const m of staticModels) {
-    if (!m?.id) continue;
-    mergeStaticRow(configuredById, {
-      providerId,
-      providerDisplayAlias,
-      providerStorageAlias,
-      modelId: m.id,
-      displayName: m.name,
-      source: "registry",
-      raw: m,
-      isCustom: false,
-    });
-  }
+  const staticById = new Map(staticModels.filter((m) => m?.id).map((m) => [m.id, m]));
 
   for (const row of customModelRows) {
     if (!row?.id) continue;
@@ -90,9 +76,9 @@ export function buildModelCatalogSections({
       providerDisplayAlias,
       providerStorageAlias,
       modelId: row.id,
-      displayName: row.name,
+      displayName: staticById.get(row.id)?.name || row.name,
       source: "custom",
-      raw: row,
+      raw: staticById.get(row.id) || row,
       isCustom: true,
     });
     const existing = configuredById.get(row.id);
@@ -146,36 +132,16 @@ export function buildModelCatalogSections({
     });
   }
 
-  for (const id of disabledModelIds) {
-    if (configuredById.has(id)) continue;
-    const enriched = enrichModelRecord({
-      providerId,
-      modelId: id,
-      source: "disabled",
-    });
-    configuredRows.push({
-      ...enriched,
-      fullModel: `${providerDisplayAlias}/${id}`,
-      storageModel: `${providerStorageAlias}/${id}`,
-      isCustom: false,
-      stale: false,
-      catalogSection: "disabled",
-    });
-  }
-
   configuredRows.sort((a, b) => a.modelId.localeCompare(b.modelId));
 
-  const configuredIds = new Set([
-    ...configuredById.keys(),
-    ...disabledModelIds,
-  ]);
+  const configuredIds = new Set(configuredById.keys());
 
   const repoById = new Map();
 
   if (discoveredRows) {
     for (const row of discoveredRows) {
       const id = row.modelId;
-      if (!id || configuredIds.has(id) || registryIds.has(id)) continue;
+      if (!id || configuredIds.has(id)) continue;
       repoById.set(id, enrichDiscoveredRow({
         providerId,
         providerDisplayAlias,
@@ -185,8 +151,8 @@ export function buildModelCatalogSections({
     }
   }
 
-  for (const m of suggestedModels || []) {
-    if (!m?.id || configuredIds.has(m.id) || registryIds.has(m.id)) continue;
+  for (const m of [...(suggestedModels || []), ...staticModels]) {
+    if (!m?.id || configuredIds.has(m.id)) continue;
     const enriched = enrichModelRecord({
       providerId,
       modelId: m.id,

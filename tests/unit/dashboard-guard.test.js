@@ -213,7 +213,7 @@ describe("dashboard guard local-only access", () => {
     }));
 
     expect(response.status).toBe(403);
-    expect(response.body.error).toBe("Local only: CLI token required");
+    expect(response.body.error).toBe("Local only: not available from remote clients");
   });
 
   it("rejects local-only route on loopback when requireLogin=true and no JWT", async () => {
@@ -222,8 +222,8 @@ describe("dashboard guard local-only access", () => {
       origin: "http://localhost:20128",
     }));
 
-    expect(response.status).toBe(403);
-    expect(response.body.error).toBe("Local only: CLI token required");
+    expect(response.status).toBe(401);
+    expect(response.body.error).toBe("Unauthorized");
   });
 
   it("allows local-only route on loopback when requireLogin=false", async () => {
@@ -265,6 +265,76 @@ describe("dashboard guard local-only access", () => {
     }));
 
     expect(response).toBe(mocks.nextResponse);
+  });
+
+  it("allows cursor auto-import on loopback dev host when requireLogin=false", async () => {
+    const prevEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "development";
+    mocks.getSettings.mockResolvedValue({ requireLogin: false });
+
+    const response = await proxy(request("/api/oauth/cursor/auto-import", {
+      host: "localhost:20127",
+      origin: "http://localhost:20127",
+    }));
+
+    expect(response).toBe(mocks.nextResponse);
+    process.env.NODE_ENV = prevEnv;
+  });
+
+  it("allows cursor auto-import with trusted loopback peer when requireLogin=false", async () => {
+    mocks.getSettings.mockResolvedValue({ requireLogin: false });
+
+    const response = await proxy(localRequest("/api/oauth/cursor/auto-import", {
+      host: "localhost:20127",
+      origin: "http://localhost:20127",
+    }));
+
+    expect(response).toBe(mocks.nextResponse);
+  });
+
+  it("allows cursor auto-import on loopback with valid JWT when requireLogin=true", async () => {
+    mocks.verifyDashboardAuthToken.mockResolvedValue(true);
+
+    const response = await proxy(localRequest("/api/oauth/cursor/auto-import", {
+      host: "localhost:20127",
+      origin: "http://localhost:20127",
+    }));
+
+    expect(response).toBe(mocks.nextResponse);
+  });
+
+  it("denies cursor auto-import for remote Host localhost spoof", async () => {
+    mocks.getSettings.mockResolvedValue({ requireLogin: false });
+
+    const response = await proxy(request("/api/oauth/cursor/auto-import", {
+      host: "localhost:20127",
+      origin: "http://localhost:20127",
+    }));
+
+    expect(response.status).toBe(403);
+  });
+
+  it("denies cursor auto-import when Origin is remote on loopback peer", async () => {
+    mocks.getSettings.mockResolvedValue({ requireLogin: false });
+
+    const response = await proxy(localRequest("/api/oauth/cursor/auto-import", {
+      host: "localhost:20127",
+      origin: "http://evil.example.com",
+    }));
+
+    expect(response.status).toBe(403);
+  });
+
+  it("denies cursor auto-import when request came via reverse proxy marker", async () => {
+    mocks.getSettings.mockResolvedValue({ requireLogin: false });
+
+    const response = await proxy(localRequest("/api/oauth/cursor/auto-import", {
+      host: "localhost:20127",
+      origin: "http://localhost:20127",
+      "x-9r-via-proxy": "1",
+    }));
+
+    expect(response.status).toBe(403);
   });
 });
 

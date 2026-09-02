@@ -42,8 +42,6 @@ const ALWAYS_PROTECTED = [
   "/api/settings/database",
   "/api/version/shutdown",
   "/api/version/update",
-  "/api/oauth/cursor/auto-import",
-  "/api/oauth/kiro/auto-import",
 ];
 
 // Require auth, but allow through if requireLogin is disabled
@@ -158,10 +156,10 @@ async function canAccessPublicLlmApi(request) {
 }
 
 async function canAccessLocalOnlyRoute(request) {
-  if (await hasValidCliToken(request)) return true;
-  // Browser on host: loopback Host + Origin (blocks tunnel/CSRF) + auth (JWT or requireLogin=false)
-  if (isLocalRequest(request) && await isAuthenticated(request)) return true;
-  return false;
+  if (await hasValidCliToken(request)) return { ok: true };
+  if (!isLocalRequest(request)) return { ok: false, reason: "remote" };
+  if (await isAuthenticated(request)) return { ok: true };
+  return { ok: false, reason: "auth" };
 }
 
 async function hasValidToken(request) {
@@ -203,8 +201,15 @@ export async function proxy(request) {
 
   // Local-only gate for spawn-capable / host-secret routes.
   if (LOCAL_ONLY_PATHS.some((p) => pathname.startsWith(p))) {
-    if (!(await canAccessLocalOnlyRoute(request))) {
-      return NextResponse.json({ error: "Local only: CLI token required" }, { status: 403 });
+    const access = await canAccessLocalOnlyRoute(request);
+    if (!access.ok) {
+      if (access.reason === "auth") {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      return NextResponse.json(
+        { error: "Local only: not available from remote clients" },
+        { status: 403 }
+      );
     }
   }
 

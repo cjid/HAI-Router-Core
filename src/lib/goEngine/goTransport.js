@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { serializeBodyForGoTransport } from "./serializeBodyForGoTransport.js";
 import {
   getGoWorkerManager,
   getGoEngineManager,
@@ -167,11 +168,7 @@ export async function goEngineFetch(url, options = {}, proxyOptions = null) {
 
   const method = (options.method || "GET").toUpperCase();
   const headers = headersToObject(options.headers);
-  const body = typeof options.body === "string"
-    ? options.body
-    : options.body == null
-      ? ""
-      : JSON.stringify(options.body);
+  const body = serializeBodyForGoTransport(options.body, options.headers);
 
   const egressLog = buildEgressLogFields(proxyOptions, egress);
   const operation = proxyOptions?.operation || "provider_request";

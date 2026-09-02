@@ -30,6 +30,15 @@ export default function CursorAuthModal({ isOpen, onSuccess, onClose, proxyPools
       const res = await fetch("/api/oauth/cursor/auto-import");
       const data = await res.json();
 
+      if (res.status === 403) {
+        setError("Cursor auto-import is only available from the local dashboard on this machine");
+        return;
+      }
+      if (res.status === 401) {
+        setError("Sign in to the local dashboard to auto-import Cursor credentials");
+        return;
+      }
+
       if (data.found) {
         setAccessToken(data.accessToken);
         setMachineId(data.machineId);

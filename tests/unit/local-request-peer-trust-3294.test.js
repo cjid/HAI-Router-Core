@@ -161,7 +161,7 @@ describe("peer header trust", () => {
     }));
 
     expect(response.status).toBe(403);
-    expect(response.body.error).toBe("Local only: CLI token required");
+    expect(response.body.error).toBe("Local only: not available from remote clients");
   });
 
   it("accepts the legacy Host fallback only in development", async () => {

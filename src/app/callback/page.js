@@ -95,7 +95,7 @@ function CallbackContent() {
               <MdiIcon name="progress_activity" size={30} spin className="text-primary animate-spin" />
             </div>
             <h1 className="text-xl font-semibold mb-2">Processing...</h1>
-            <p className="text-text-muted">Please wait while we complete the authorization.</p>
+            <p className="text-text-muted">Relaying authorization to HAI-Router…</p>
           </>
         )}
 
@@ -104,9 +104,11 @@ function CallbackContent() {
             <div className="size-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
               <MdiIcon name="check_circle" size={30} className="text-green-600" />
             </div>
-            <h1 className="text-xl font-semibold mb-2">Authorization Successful!</h1>
+            <h1 className="text-xl font-semibold mb-2">Authorization received</h1>
             <p className="text-text-muted">
-              {status === "success" ? "This window will close automatically..." : "You can close this tab now."}
+              {status === "success"
+                ? "You may return to HAI-Router while connection setup completes. This window will close automatically…"
+                : "You can close this tab now."}
             </p>
           </>
         )}

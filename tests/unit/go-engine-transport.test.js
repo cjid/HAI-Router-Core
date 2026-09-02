@@ -97,4 +97,44 @@ describe("goEngine transport bridge", () => {
     const text = await res.text();
     expect(text).toContain("https://provider.test/api");
   });
+
+  it("preserves URLSearchParams OAuth bodies in ExecutionSpec", async () => {
+    const { goEngineFetch } = await import("@/lib/goEngine/goTransport.js");
+    let capturedBody = null;
+
+    mockWorker.removeAllListeners("request");
+    mockWorker.on("request", (req, res) => {
+      if (req.url === "/v1/execute" && req.method === "POST") {
+        let body = "";
+        req.on("data", (c) => { body += c; });
+        req.on("end", () => {
+          const spec = JSON.parse(body);
+          capturedBody = spec.body;
+          res.writeHead(200, { "Content-Type": "text/plain", "X-HAI-Transport-Protocol": "1" });
+          res.end("ok");
+        });
+        return;
+      }
+      res.writeHead(404);
+      res.end();
+    });
+
+    const form = new URLSearchParams({
+      grant_type: "authorization_code",
+      code: "abc 123",
+      redirect_uri: "http://localhost/callback",
+    });
+
+    await goEngineFetch("https://oauth.example/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: form,
+    }, { providerId: "test" });
+
+    const parsed = new URLSearchParams(capturedBody);
+    expect(parsed.get("grant_type")).toBe("authorization_code");
+    expect(parsed.get("code")).toBe("abc 123");
+    expect(parsed.get("redirect_uri")).toBe("http://localhost/callback");
+    expect(capturedBody).not.toBe("{}");
+  });
 });

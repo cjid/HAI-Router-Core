@@ -1,50 +1,41 @@
 # HAI-Router Changelog
 
-Canonical structured data lives in `src/shared/data/changelog.js` (bundled in the dashboard at `/dashboard/changelog`). This file is a short human-readable summary aligned with that source.
+Canonical structured data lives in `src/shared/data/changelog.js` (dashboard `/dashboard/changelog`). Full release notes: [RELEASE_NOTES_0.1.0-init.md](./RELEASE_NOTES_0.1.0-init.md).
 
-## 0.1.0-init — Development
+## 0.1.0-init — Pre-release
 
-**Build:** `248d88e7` · **Channel:** Development · **Architecture:** Node control-plane + Go Engine transport
+**Version:** `0.1.0-init` · **Architecture:** Node control-plane + Go Engine transport · **Status:** Pre-release
 
 ### Highlights
 
 - OpenAI-compatible `/v1` gateway with multi-provider routing and format translation
 - Provider-facing HTTP exclusively via Go Engine (zero Node provider egress)
 - Provider-truthful SSE streaming (presentation smoother removed)
-- Request Details drawer fetch race fixed
 - Provider Safety concurrency controls
-- Native offline Changelog & capability status page
+- Native offline Changelog & Verification gates UI
+- Updated branding assets (`images/hai_router.png`, `docs/images/`)
 
-### Completed (selected)
+### Verification (2026-09-02)
 
-- Go Engine: IPC, lifecycle, dynamic workers, HTTP/1.1 + HTTP/2 + SSE, proxy relay
-- Usage: token accounting, cached tokens, Request Details observability
-- Model catalog: fetch models, enable/disable, model test UI
-- Combos: Fallback, Round Robin, Fusion + vision capacity adapter
-- Identity: `~/.hairouter` SSOT, legacy `~/.9router` migration, docs rebuild
+| Gate | Status |
+|------|--------|
+| Provider-facing Node egress | PASS |
+| Go unit / race / vet | PASS |
+| Vitest full unit regression | PASS (2113 passed, 0 failed) |
+| Production build | PASS |
+| Docker build (`hairouter:0.1.0-init`) | PASS |
+| Provider-truthful streaming | PASS |
+| CLI npm pack | PASS (not primary release artifact) |
 
-### In progress
+### Compatibility
 
-- Active 9Router identity cleanup (compat layer retained; audit script still flags stragglers)
+- Canonical data: `~/.hairouter/`; legacy `~/.9router/` migrated on first run
+- Legacy 9Router identity retained only for migration, CLI compat, and footer attribution
+- i18n literal files may still contain legacy strings (non-blocking)
 
-### Known limitations
+### CLI
 
-- Some i18n literal files still contain legacy “9Router” strings in translations
-- Full vitest suite not all-green on plain checkout (inherited baseline failures)
-- Cross-platform Go worker matrix and CLI e2e install need verification gates
-
-### Deprecated / removed
-
-- **Adaptive presentation smoother** — removed (`f705cdc`); provider-truthful SSE is current behavior
-
-### Verification (spot checks)
-
-| Gate | Status | Command |
-|------|--------|---------|
-| Provider-facing Node egress | PASS | `npm run audit:egress` |
-| Go unit tests | PASS | `cd go-engine && go test ./...` |
-| Provider-truthful streaming | PASS | `tests/unit/provider-truthful-stream.test.js` |
-| Production build | Not run this cycle | `npm run build` |
+Legacy `9router@0.5.59` npm pack verified but **not** bundled as primary HAI-Router Core release artifact.
 
 ---
 

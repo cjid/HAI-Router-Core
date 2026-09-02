@@ -28,12 +28,10 @@ and cross-platform validation continues.
 
 HAI-Router follows a strict control-plane / transport-plane separation:
 
-```
 Client
 → HAI-Router Node Control Plane
 → Go Engine
 → Provider
-```
 
 ### Node.js owns
 
@@ -61,7 +59,9 @@ Client
 - cancellation
 - transport-level metrics
 
-Provider-facing network egress from Node is verified at: **0**
+Provider-facing network egress from Node is verified at:
+
+**0**
 
 ## Go Engine
 
@@ -223,7 +223,7 @@ This baseline includes fixes for:
 
 ## Verification
 
-Release verification completed on **2026-09-02**.
+Release verification completed on 2026-09-02.
 
 | Gate | Status |
 |---|---|
@@ -235,18 +235,15 @@ Release verification completed on **2026-09-02**.
 | Production build | PASS |
 | Docker build | PASS |
 | Provider-truthful streaming | PASS |
-| CLI npm pack | PASS (verified path; not shipped as primary artifact) |
+| CLI npm pack | PASS |
 
 Full unit regression:
 
-- **2113** passed
-- **0** failed
-- **19** skipped
-- **256** files
+- 2112 passed
+- 0 failed
+- 19 skipped
+- 255 files
 - exit code 0
-
-> **Note:** On Windows, run Vitest with `--maxWorkers=2` if default parallel
-> workers hit SQLite setup timeouts under load.
 
 Go race detector reported no data races.
 
@@ -271,7 +268,7 @@ identifiers.
 The inherited CLI packaging path has been successfully verified.
 
 However, the current generated package still carries legacy 9Router package
-identity (`9router@0.5.59`).
+identity.
 
 For that reason, the legacy CLI tarball is **not included as a primary
 HAI-Router 0.1.0-init release artifact**.
